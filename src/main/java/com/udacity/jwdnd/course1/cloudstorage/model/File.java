@@ -1,7 +1,5 @@
 package com.udacity.jwdnd.course1.cloudstorage.model;
 
-import java.sql.Blob;
-
 public class File {
 
   private Integer fileId;
@@ -9,7 +7,7 @@ public class File {
   private String contenttype;
   private Integer userid;
   private String filesize;
-  private Blob filedata;
+  private byte[] filedata;
 
   public File(
       Integer fileId,
@@ -17,7 +15,7 @@ public class File {
       String contenttype,
       Integer userid,
       String filesize,
-      Blob filedata) {
+      byte[] filedata) {
     this.fileId = fileId;
     this.filename = filename;
     this.contenttype = contenttype;
@@ -66,11 +64,11 @@ public class File {
     this.filesize = filesize;
   }
 
-  public Blob getFiledata() {
+  public byte[] getFiledata() {
     return filedata;
   }
 
-  public void setFiledata(Blob filedata) {
+  public void setFiledata(byte[] filedata) {
     this.filedata = filedata;
   }
 }
