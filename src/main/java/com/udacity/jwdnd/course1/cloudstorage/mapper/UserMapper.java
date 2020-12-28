@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface UserMapper {
   @Insert(
-      "INSERT INTO USERS (userid, username, salt, password, firstname, lastname) VALUES(#{userid}, #{username}, #{salt}, #{password}, #{firstname}, #{lastname})")
+      "INSERT INTO USERS (userid, username, salt, password, firstname, lastname) VALUES(#{userid}, #{username}, #{salt}, #{password}, #{firstName}, #{lastName})")
   @Options(useGeneratedKeys = true, keyProperty = "userid")
   int insertUser(User user);
 
