@@ -20,8 +20,9 @@ public class FileService {
     this.userService = userService;
   }
 
-  public File getFile(Integer fileId) {
-    return fileMapper.getFile(fileId);
+  public File getFile(Authentication auth, Integer fileId) {
+    User user = userService.getUser(auth.getName());
+    return fileMapper.getFile(fileId, user.getUserid());
   }
 
   public List<File> getFiles(Authentication auth) {
@@ -29,9 +30,15 @@ public class FileService {
     return fileMapper.getFiles(user.getUserid());
   }
 
-  public Integer insertFile(Authentication auth, MultipartFile file) throws IOException {
+  public Boolean insertFile(Authentication auth, MultipartFile file) throws IOException {
     User user = userService.getUser(auth.getName());
-    return fileMapper.insertFile(
+    File fileExists = fileMapper.findFile(file.getOriginalFilename(), user.getUserid());
+
+    if (fileExists != null) {
+      return false;
+    }
+
+    fileMapper.insertFile(
         new File(
             null,
             file.getOriginalFilename(),
@@ -39,9 +46,12 @@ public class FileService {
             user.getUserid(),
             Long.toString(file.getSize()),
             file.getBytes()));
+
+    return true;
   }
 
-  public void deleteFile(Integer fileId) {
-    fileMapper.deleteFile(fileId);
+  public int deleteFile(Authentication auth, Integer fileId) {
+    User user = userService.getUser(auth.getName());
+    return fileMapper.deleteFile(fileId, user.getUserid());
   }
 }
