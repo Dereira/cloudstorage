@@ -15,13 +15,10 @@ public interface NoteMapper {
   @Select("SELECT * FROM NOTES WHERE userid=#{userid}")
   List<Note> getNotes(Integer userid);
 
-  @Select("SELECT * FROM NOTES WHERE userid=#{userid}")
-  Note getNote(Integer userid);
-
   @Update(
-      "UPDATE NOTES SET notetitle=#{notetitle}, notedescription=#{notedescription} WHERE noteid=#{noteid}")
-  void updateNote(Note note);
+      "UPDATE NOTES SET notetitle = #{notetitle}, notedescription = #{notedescription} WHERE noteid = #{noteid} and userid = #{userid}")
+  int updateNote(Note note);
 
-  @Delete("DELETE FROM NOTES WHERE noteid=#{noteid}")
-  void deleteNote(Integer noteid);
+  @Delete("DELETE FROM NOTES WHERE userid=#{userid} AND noteid=#{noteid}")
+  int deleteNote(Integer noteid, Integer userid);
 }

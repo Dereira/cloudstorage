@@ -2,6 +2,7 @@ package com.udacity.jwdnd.course1.cloudstorage.controller;
 
 import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.service.FileService;
+import com.udacity.jwdnd.course1.cloudstorage.service.NoteService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -19,26 +20,29 @@ import java.io.IOException;
 @Controller
 public class FileController {
   private final FileService fileService;
+  private final NoteService noteService;
 
-  public FileController(FileService fileService) {
+  public FileController(FileService fileService, NoteService noteService) {
     this.fileService = fileService;
+    this.noteService = noteService;
   }
 
   @GetMapping("/files/{fileId}")
-  public String getFile(@PathVariable Integer fileId, Model model, Authentication auth) {
+  public ResponseEntity getFile(@PathVariable Integer fileId, Model model, Authentication auth) {
     try {
       File file = fileService.getFile(auth, fileId);
 
-      ResponseEntity.ok()
+      return ResponseEntity.ok()
           .header(
               HttpHeaders.CONTENT_DISPOSITION,
               "attachment; filename=\"" + file.getFilename() + "\"")
           .body(new ByteArrayResource(file.getFiledata()));
-      return "home";
     } catch (Exception e) {
       e.printStackTrace();
-      model.addAttribute("fileError", "There was an error downloading the file, please try again.");
-      return "home";
+
+      String actionMessage = "There was an error downloading the file, please try again.";
+      addAttributes(model, actionMessage, auth);
+      return null;
     }
   }
 
@@ -46,39 +50,44 @@ public class FileController {
   public String insertFile(
       @RequestAttribute MultipartFile fileUpload, Model model, Authentication auth)
       throws IOException {
-    Boolean fileStatus;
-    String fileError = null;
+    String actionMessage = null;
 
     if (fileUpload.getSize() == 0) {
-      fileError = "The file is not valid, please try again.";
+      actionMessage = "The file is not valid, please try again.";
+    } else if (fileUpload.getSize() > 10485760) {
+      actionMessage = "The file is too big, please try again.";
     }
 
-    if (fileUpload.getSize() > 10485760) {
-      fileError = "The file is too big, please try again.";
+    if (actionMessage == null) {
+      Boolean isOk = fileService.insertFile(auth, fileUpload);
+      if (isOk) {
+        actionMessage = "The file was successfully saved.";
+      } else {
+        actionMessage = "The file name already exists, please try with a different one.";
+      }
     }
 
-    fileStatus = fileService.insertFile(auth, fileUpload);
-
-    if (!fileStatus) {
-      fileError = "The file name already exists, please try with a different one.";
-    }
-
-    model.addAttribute("fileError", fileError);
-    model.addAttribute("fileStatus", fileStatus);
-
-    return "result";
+    addAttributes(model, actionMessage, auth);
+    return "home";
   }
 
   @GetMapping("/files/delete/{fileId}")
   public String deleteFile(@PathVariable Integer fileId, Model model, Authentication auth) {
+    String actionMessage = "The file was successfully deleted";
     int fileRows = fileService.deleteFile(auth, fileId);
 
     if (fileRows == 0) {
-      model.addAttribute("fileError", "There was an error deleting the file, please try again.");
-      return "result";
+      actionMessage = "There was an error deleting the file, please try again.";
     }
 
-    model.addAttribute("fileStatus", true);
-    return "result";
+    addAttributes(model, actionMessage, auth);
+    return "home";
+  }
+
+  private void addAttributes(Model model, String actionMessage, Authentication auth) {
+    model.addAttribute("actionMessage", actionMessage);
+    model.addAttribute("isFilesActive", true);
+    model.addAttribute("files", fileService.getFiles(auth));
+    model.addAttribute("notes", noteService.getNotes(auth));
   }
 }

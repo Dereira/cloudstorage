@@ -9,6 +9,17 @@
     <title>Home</title>
 </head>
 <body class="p-3 mb-2 bg-light text-black">
+<div class="toast" data-delay="10000"
+     style="position: absolute; top: 15px; right: 15px; z-index:1;"
+     th:if="${actionMessage}">
+    <div class="toast-header">
+        <strong class="mr-auto">Cloud Storage</strong>
+        <button aria-label="Close" class="ml-2 mb-1 close" data-dismiss="toast" type="button">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="toast-body" th:text="${actionMessage}"></div>
+</div>
 <div class="container">
     <div id="logoutDiv">
         <form action="#" method="POST" th:action="@{/logout}">
@@ -18,18 +29,20 @@
     <div id="contentDiv" style="clear: right;">
         <nav style="clear: right;">
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <a aria-controls="nav-files" aria-selected="true" class="nav-item nav-link active" data-toggle="tab"
+                <a aria-controls="nav-files" aria-selected="true" class="nav-item nav-link" data-toggle="tab"
                    href="#nav-files"
-                   id="nav-files-tab" role="tab">Files</a>
+                   id="nav-files-tab" role="tab" th:classappend="${isFilesActive} ? 'active' : ''">Files</a>
                 <a aria-controls="nav-notes" aria-selected="false" class="nav-item nav-link" data-toggle="tab"
                    href="#nav-notes"
-                   id="nav-notes-tab" role="tab">Notes</a>
+                   id="nav-notes-tab" role="tab" th:classappend="${isNotesActive} ? 'active' : ''">Notes</a>
                 <a aria-controls="nav-credentials" aria-selected="false" class="nav-item nav-link" data-toggle="tab"
-                   href="#nav-credentials" id="nav-credentials-tab" role="tab">Credentials</a>
+                   href="#nav-credentials" id="nav-credentials-tab" role="tab"
+                   th:classappend="${isCredentialsActive} ? 'active' : ''">Credentials</a>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
-            <div aria-labelledby="nav-files-tab" class="tab-pane fade show active" id="nav-files" role="tabpanel">
+            <div aria-labelledby="nav-files-tab" class="tab-pane fade" id="nav-files" role="tabpanel"
+                 th:classappend="${isFilesActive} ? 'show active' : ''">
                 <form action="#" enctype="multipart/form-data" method="POST" th:action="@{/files}">
                     <div class="container">
                         <div class="row" style="margin: 1em;">
@@ -54,7 +67,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:if="${files.isEmpty()}">
+                        <tr th:if="${files==null or files.isEmpty()}">
                             <td colspan="2"> No Files Available</td>
                         </tr>
                         <tr th:each="file : ${files}">
@@ -71,7 +84,8 @@
                     </table>
                 </div>
             </div>
-            <div aria-labelledby="nav-notes-tab" class="tab-pane fade" id="nav-notes" role="tabpanel">
+            <div aria-labelledby="nav-notes-tab" class="tab-pane fade" id="nav-notes" role="tabpanel"
+                 th:classappend="${isNotesActive} ? 'show active' : ''">
                 <button class="btn btn-info float-right" onclick="showNoteModal()" style="margin: 0.25em;"
                         type="button">
                     + Add a New Note
@@ -87,19 +101,28 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
+                        <tr th:if="${notes == null or notes.isEmpty()}">
+                            <td colspan="2"> No notes Available</td>
+                        </tr>
+                        <tr th:each="note : ${notes}">
                             <td>
-                                <button class="btn btn-success" type="button">Edit</button>
-                                <a class="btn btn-danger">Delete</a>
+                                <button class="btn btn-success"
+                                        th:attr="onclick=|showNoteModal('${note.noteid}','${note.notetitle}','${note.notedescription}')|"
+                                        type="button">
+                                    Edit
+                                </button>
+                                <a class="btn btn-danger"
+                                   th:href="@{/notes/delete/{noteId}(noteId=${note.noteid})}">Delete</a>
                             </td>
-                            <th scope="row">Example Note Title</th>
-                            <td>Example Note Description</td>
+                            <th scope="row" th:text="${note.notetitle}"></th>
+                            <td th:text="${note.notedescription}"></td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <div aria-hidden="true" aria-labelledby="noteModalLabel" class="modal fade" id="noteModal" role="dialog"
+                <div aria-hidden="true" aria-labelledby="noteModalLabel" class="modal fade" id="noteModal"
+                     role="dialog"
                      tabindex="-1">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -110,24 +133,25 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="#" method="POST">
-                                    <input id="note-id" name="noteId" type="hidden">
+                                <form action="#" method="POST" th:action="@{/notes}">
+                                    <input id="note-id" name="noteid" type="hidden">
                                     <div class="form-group">
                                         <label class="col-form-label" for="note-title">Title</label>
-                                        <input class="form-control" id="note-title" maxlength="20" name="noteTitle"
+                                        <input class="form-control" id="note-title" maxlength="20" name="notetitle"
                                                required type="text">
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label" for="note-description">Description</label>
                                         <textarea class="form-control" id="note-description" maxlength="1000"
-                                                  name="noteDescription" required rows="5"></textarea>
+                                                  name="notedescription" required rows="5"></textarea>
                                     </div>
                                     <button class="d-none" id="noteSubmit" type="submit"></button>
                                 </form>
                             </div>
                             <div class="modal-footer">
                                 <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-                                <button class="btn btn-primary" onclick="$('#noteSubmit').click();" type="button">Save
+                                <button class="btn btn-primary" onclick="$('#noteSubmit').click();" type="button">
+                                    Save
                                     changes
                                 </button>
                             </div>
@@ -135,7 +159,8 @@
                     </div>
                 </div>
             </div>
-            <div aria-labelledby="nav-credentials-tab" class="tab-pane fade" id="nav-credentials" role="tabpanel">
+            <div aria-labelledby="nav-credentials-tab" class="tab-pane fade" id="nav-credentials" role="tabpanel"
+                 th:classappend="${isCredentialsActive} ? 'show active' : ''">
                 <button class="btn btn-info float-right" onclick="showCredentialModal()" style="margin: 0.25em;"
                         type="button">
                     + Add a New Credential
@@ -165,7 +190,8 @@
                     </table>
                 </div>
 
-                <div aria-hidden="true" aria-labelledby="credentialModalLabel" class="modal fade" id="credentialModal"
+                <div aria-hidden="true" aria-labelledby="credentialModalLabel" class="modal fade"
+                     id="credentialModal"
                      role="dialog" tabindex="-1">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -200,7 +226,8 @@
                             </div>
                             <div class="modal-footer">
                                 <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-                                <button class="btn btn-primary" onclick="$('#credentialSubmit').click();" type="button">
+                                <button class="btn btn-primary" onclick="$('#credentialSubmit').click();"
+                                        type="button">
                                     Save changes
                                 </button>
                             </div>
@@ -215,6 +242,15 @@
 <script th:src="@{/js/jquery-slim.min.js}"></script>
 <script th:src="@{/js/popper.min.js}"></script>
 <script th:src="@{/js/bootstrap.min.js}"></script>
+
+<script th:inline="javascript">
+    if ([[${actionMessage}]]) {
+        $(document).ready(function () {
+            $('.toast').toast('show');
+        });
+    }
+
+</script>
 
 <!--For opening the note modal-->
 <script type="text/javascript">
