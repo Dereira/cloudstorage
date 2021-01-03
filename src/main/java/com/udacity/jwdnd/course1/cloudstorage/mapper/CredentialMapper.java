@@ -10,7 +10,7 @@ public interface CredentialMapper {
   @Insert(
       "INSERT INTO CREDENTIALS (credentialid, url, username, key, password, userid) VALUES(#{credentialId}, #{url}, #{username}, #{key}, #{password}, #{userid})")
   @Options(useGeneratedKeys = true, keyProperty = "credentialId")
-  int create(Credential credential);
+  void create(Credential credential);
 
   @Select("SELECT * FROM CREDENTIALS WHERE userid=#{userid} AND credentialid=#{credentialId}")
   Credential read(int userid, int credentialId);
@@ -20,7 +20,7 @@ public interface CredentialMapper {
 
   @Update(
       "UPDATE CREDENTIALS SET url=#{url}, username=#{username}, key=#{key}, password=#{password} WHERE credentialid=#{credentialId}")
-  int update(Credential credential);
+  void update(Credential credential);
 
   @Delete(
       "DELETE FROM CREDENTIALS WHERE credentialid=#{credentialid} AND credentialid=#{credentialId}")

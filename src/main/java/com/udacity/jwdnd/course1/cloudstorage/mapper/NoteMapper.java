@@ -10,14 +10,14 @@ public interface NoteMapper {
   @Insert(
       "INSERT INTO NOTES (noteid, notetitle, notedescription, userid) VALUES(#{noteId}, #{noteTitle}, #{noteDescription}, #{userId})")
   @Options(useGeneratedKeys = true, keyProperty = "noteId")
-  int create(Note note);
+  void create(Note note);
 
   @Select("SELECT * FROM NOTES WHERE userid=#{userId}")
   List<Note> read(Integer userId);
 
   @Update(
       "UPDATE NOTES SET notetitle = #{noteTitle}, notedescription = #{noteDescription} WHERE noteid = #{noteId} and userid = #{userId}")
-  int update(Note note);
+  void update(Note note);
 
   @Delete("DELETE FROM NOTES WHERE userid=#{userId} AND noteid=#{noteId}")
   int delete(Integer noteId, Integer userId);
