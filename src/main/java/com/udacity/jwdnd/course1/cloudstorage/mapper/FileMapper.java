@@ -8,19 +8,19 @@ import java.util.List;
 @Mapper
 public interface FileMapper {
   @Insert(
-      "INSERT INTO FILES (fileId, filename, contenttype, userid, filesize, filedata) VALUES(#{fileId}, #{filename}, #{contenttype}, #{userid}, #{filesize}, #{filedata})")
+      "INSERT INTO FILES (fileId, filename, contenttype, userid, filesize, filedata) VALUES(#{fileId}, #{filename}, #{contentType}, #{userid}, #{filesize}, #{fileData})")
   @Options(useGeneratedKeys = true, keyProperty = "fileId")
-  int insertFile(File file);
+  int create(File file);
 
   @Select("SELECT * FROM FILES WHERE userid=#{userid}")
-  List<File> getFiles(Integer userid);
+  List<File> readAll(Integer userid);
 
   @Select("SELECT * FROM FILES WHERE fileId=#{fileId} AND userid=#{userid}")
-  File getFile(Integer fileId, Integer userid);
+  File read(Integer fileId, Integer userid);
 
   @Select("SELECT * FROM FILES WHERE filename=#{fileName} AND userid=#{userid}")
-  File findFile(String fileName, Integer userid);
+  File find(String fileName, Integer userid);
 
   @Delete("DELETE FROM FILES WHERE fileId=#{fileId} AND userid=#{userid}")
-  int deleteFile(Integer fileId, Integer userid);
+  int delete(Integer fileId, Integer userid);
 }

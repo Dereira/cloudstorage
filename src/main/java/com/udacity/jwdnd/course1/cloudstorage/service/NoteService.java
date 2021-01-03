@@ -18,27 +18,27 @@ public class NoteService {
     this.userService = userService;
   }
 
-  public List<Note> getNotes(Authentication auth) {
-    User user = userService.getUser(auth.getName());
-    return noteMapper.getNotes(user.getUserid());
+  public int create(Authentication auth, Note note) {
+    User user = userService.read(auth.getName());
+
+    return noteMapper.create(
+        new Note(null, note.getNoteTitle(), note.getNoteDescription(), user.getUserid()));
   }
 
-  public int insertNote(Authentication auth, Note note) {
-    User user = userService.getUser(auth.getName());
-
-    return noteMapper.insertNote(
-        new Note(null, note.getNotetitle(), note.getNotedescription(), user.getUserid()));
+  public List<Note> read(Authentication auth) {
+    User user = userService.read(auth.getName());
+    return noteMapper.read(user.getUserid());
   }
 
-  public int deleteNote(Authentication auth, Integer noteId) {
-    User user = userService.getUser(auth.getName());
-    return noteMapper.deleteNote(noteId, user.getUserid());
-  }
-
-  public int updateNote(Authentication auth, Note note) {
-    User user = userService.getUser(auth.getName());
-    return noteMapper.updateNote(
+  public int update(Authentication auth, Note note) {
+    User user = userService.read(auth.getName());
+    return noteMapper.update(
         new Note(
-            note.getNoteid(), note.getNotetitle(), note.getNotedescription(), user.getUserid()));
+            note.getNoteId(), note.getNoteTitle(), note.getNoteDescription(), user.getUserid()));
+  }
+
+  public int delete(Authentication auth, Integer noteId) {
+    User user = userService.read(auth.getName());
+    return noteMapper.delete(noteId, user.getUserid());
   }
 }

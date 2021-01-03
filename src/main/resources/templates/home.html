@@ -31,19 +31,19 @@
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <a aria-controls="nav-files" aria-selected="true" class="nav-item nav-link" data-toggle="tab"
                    href="#nav-files"
-                   id="nav-files-tab" role="tab" th:classappend="${isFilesActive} ? 'active' : ''">Files</a>
+                   id="nav-files-tab" role="tab" th:classappend="${isFileActive} ? 'active' : ''">Files</a>
                 <a aria-controls="nav-notes" aria-selected="false" class="nav-item nav-link" data-toggle="tab"
                    href="#nav-notes"
-                   id="nav-notes-tab" role="tab" th:classappend="${isNotesActive} ? 'active' : ''">Notes</a>
+                   id="nav-notes-tab" role="tab" th:classappend="${isNoteActive} ? 'active' : ''">Notes</a>
                 <a aria-controls="nav-credentials" aria-selected="false" class="nav-item nav-link" data-toggle="tab"
                    href="#nav-credentials" id="nav-credentials-tab" role="tab"
-                   th:classappend="${isCredentialsActive} ? 'active' : ''">Credentials</a>
+                   th:classappend="${isCredentialActive} ? 'active' : ''">Credentials</a>
             </div>
         </nav>
         <div class="tab-content" id="nav-tabContent">
             <div aria-labelledby="nav-files-tab" class="tab-pane fade" id="nav-files" role="tabpanel"
-                 th:classappend="${isFilesActive} ? 'show active' : ''">
-                <form action="#" enctype="multipart/form-data" method="POST" th:action="@{/files}">
+                 th:classappend="${isFileActive} ? 'show active' : ''">
+                <form action="#" enctype="multipart/form-data" method="POST" th:action="@{/file}">
                     <div class="container">
                         <div class="row" style="margin: 1em;">
                             <div class="col-sm-2">
@@ -73,9 +73,9 @@
                         <tr th:each="file : ${files}">
                             <td>
                                 <a class="btn btn-success" target="_blank"
-                                   th:href="@{/files/{fileId}
+                                   th:href="@{/file/{fileId}
    (fileId=${file.fileId})}">View</a>
-                                <a class="btn btn-danger" th:href="@{/files/delete/{fileId}
+                                <a class="btn btn-danger" th:href="@{/file/delete/{fileId}
    (fileId=${file.fileId})}">Delete</a>
                             </td>
                             <th scope="row" th:text="${file.filename}"></th>
@@ -85,7 +85,7 @@
                 </div>
             </div>
             <div aria-labelledby="nav-notes-tab" class="tab-pane fade" id="nav-notes" role="tabpanel"
-                 th:classappend="${isNotesActive} ? 'show active' : ''">
+                 th:classappend="${isNoteActive} ? 'show active' : ''">
                 <button class="btn btn-info float-right" onclick="showNoteModal()" style="margin: 0.25em;"
                         type="button">
                     + Add a New Note
@@ -107,15 +107,15 @@
                         <tr th:each="note : ${notes}">
                             <td>
                                 <button class="btn btn-success"
-                                        th:attr="onclick=|showNoteModal('${note.noteid}','${note.notetitle}','${note.notedescription}')|"
+                                        th:attr="onclick=|showNoteModal('${note.noteId}','${note.noteTitle}','${note.noteDescription}')|"
                                         type="button">
                                     Edit
                                 </button>
                                 <a class="btn btn-danger"
-                                   th:href="@{/notes/delete/{noteId}(noteId=${note.noteid})}">Delete</a>
+                                   th:href="@{/note/delete/{noteId}(noteId=${note.noteId})}">Delete</a>
                             </td>
-                            <th scope="row" th:text="${note.notetitle}"></th>
-                            <td th:text="${note.notedescription}"></td>
+                            <th scope="row" th:text="${note.noteTitle}"></th>
+                            <td th:text="${note.noteDescription}"></td>
                         </tr>
                         </tbody>
                     </table>
@@ -133,17 +133,17 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="#" method="POST" th:action="@{/notes}">
-                                    <input id="note-id" name="noteid" type="hidden">
+                                <form action="#" method="POST" th:action="@{/note}">
+                                    <input id="note-id" name="noteId" type="hidden">
                                     <div class="form-group">
                                         <label class="col-form-label" for="note-title">Title</label>
-                                        <input class="form-control" id="note-title" maxlength="20" name="notetitle"
+                                        <input class="form-control" id="note-title" maxlength="20" name="noteTitle"
                                                required type="text">
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label" for="note-description">Description</label>
                                         <textarea class="form-control" id="note-description" maxlength="1000"
-                                                  name="notedescription" required rows="5"></textarea>
+                                                  name="noteDescription" required rows="5"></textarea>
                                     </div>
                                     <button class="d-none" id="noteSubmit" type="submit"></button>
                                 </form>
@@ -160,14 +160,14 @@
                 </div>
             </div>
             <div aria-labelledby="nav-credentials-tab" class="tab-pane fade" id="nav-credentials" role="tabpanel"
-                 th:classappend="${isCredentialsActive} ? 'show active' : ''">
+                 th:classappend="${isCredentialActive} ? 'show active' : ''">
                 <button class="btn btn-info float-right" onclick="showCredentialModal()" style="margin: 0.25em;"
                         type="button">
                     + Add a New Credential
                 </button>
 
                 <div class="table-responsive">
-                    <table class="table table-striped" id="credentialTable" th:object="${credentials}">
+                    <table class="table table-striped" id="credentialTable">
                         <thead>
                         <tr>
                             <th scope="col" style="width: 20%"></th>
@@ -177,14 +177,22 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
+                        <tr th:if="${credentials == null or credentials.isEmpty()}">
+                            <td colspan="2"> No credentials Available</td>
+                        </tr>
+                        <tr th:each="credential : ${credentials}">
                             <td>
-                                <button class="btn btn-success" type="button">Edit</button>
-                                <a class="btn btn-danger">Delete</a>
+                                <button class="btn btn-success"
+                                        th:attr="onclick=|showCredentialModal('${ credential.credentialId}','${credential.url}','${credential.username}','${credential.password}')|"
+                                        type="button"
+                                >Edit
+                                </button>
+                                <a class="btn btn-danger"
+                                   th:href="@{/credential/delete/{credentialId}(credentialId=${credential.credentialId})}">Delete</a>
                             </td>
-                            <th scope="row">Example Credential URL</th>
-                            <td>Example Credential Username</td>
-                            <td>Example Credential Password</td>
+                            <th scope="row" th:text="${credential.url}"></th>
+                            <td th:text="${credential.username}"></td>
+                            <td th:text="${credential.password}"></td>
                         </tr>
                         </tbody>
                     </table>
@@ -202,7 +210,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="#" method="POST">
+                                <form action="#" method="POST" th:action="@{/credential}">
                                     <input id="credential-id" name="credentialId" type="hidden">
                                     <div class="form-group">
                                         <label class="col-form-label" for="note-title">URL</label>

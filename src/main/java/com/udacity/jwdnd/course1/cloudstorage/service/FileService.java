@@ -20,25 +20,25 @@ public class FileService {
     this.userService = userService;
   }
 
-  public File getFile(Authentication auth, Integer fileId) {
-    User user = userService.getUser(auth.getName());
-    return fileMapper.getFile(fileId, user.getUserid());
+  public File read(Authentication auth, Integer fileId) {
+    User user = userService.read(auth.getName());
+    return fileMapper.read(fileId, user.getUserid());
   }
 
-  public List<File> getFiles(Authentication auth) {
-    User user = userService.getUser(auth.getName());
-    return fileMapper.getFiles(user.getUserid());
+  public List<File> readAll(Authentication auth) {
+    User user = userService.read(auth.getName());
+    return fileMapper.readAll(user.getUserid());
   }
 
-  public Boolean insertFile(Authentication auth, MultipartFile file) throws IOException {
-    User user = userService.getUser(auth.getName());
-    File fileExists = fileMapper.findFile(file.getOriginalFilename(), user.getUserid());
+  public Boolean create(Authentication auth, MultipartFile file) throws IOException {
+    User user = userService.read(auth.getName());
+    File fileExists = fileMapper.find(file.getOriginalFilename(), user.getUserid());
 
     if (fileExists != null) {
       return false;
     }
 
-    fileMapper.insertFile(
+    fileMapper.create(
         new File(
             null,
             file.getOriginalFilename(),
@@ -50,8 +50,8 @@ public class FileService {
     return true;
   }
 
-  public int deleteFile(Authentication auth, Integer fileId) {
-    User user = userService.getUser(auth.getName());
-    return fileMapper.deleteFile(fileId, user.getUserid());
+  public int delete(Authentication auth, Integer fileId) {
+    User user = userService.read(auth.getName());
+    return fileMapper.delete(fileId, user.getUserid());
   }
 }

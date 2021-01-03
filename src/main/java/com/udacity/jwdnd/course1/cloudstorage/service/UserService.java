@@ -17,17 +17,17 @@ public class UserService {
     this.hashService = hashService;
   }
 
-  public Boolean isUserAvailable(String username) {
-    return userMapper.getUser(username) == null;
+  public Boolean isAvailable(String username) {
+    return userMapper.read(username) == null;
   }
 
-  public Integer createUser(User user) {
+  public Integer create(User user) {
     SecureRandom random = new SecureRandom();
     byte[] salt = new byte[16];
     random.nextBytes(salt);
     String encodedSalt = Base64.getEncoder().encodeToString(salt);
     String hashedPassword = hashService.getHashedValue(user.getPassword(), encodedSalt);
-    return userMapper.insertUser(
+    return userMapper.create(
         new User(
             null,
             user.getUsername(),
@@ -37,7 +37,7 @@ public class UserService {
             user.getLastName()));
   }
 
-  User getUser(String username) {
-    return userMapper.getUser(username);
+  User read(String username) {
+    return userMapper.read(username);
   }
 }

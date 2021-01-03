@@ -27,16 +27,16 @@ public class FileController {
     this.noteService = noteService;
   }
 
-  @GetMapping("/files/{fileId}")
-  public ResponseEntity getFile(@PathVariable Integer fileId, Model model, Authentication auth) {
+  @GetMapping("/file/{fileId}")
+  public ResponseEntity read(@PathVariable Integer fileId, Model model, Authentication auth) {
     try {
-      File file = fileService.getFile(auth, fileId);
+      File file = fileService.read(auth, fileId);
 
       return ResponseEntity.ok()
           .header(
               HttpHeaders.CONTENT_DISPOSITION,
               "attachment; filename=\"" + file.getFilename() + "\"")
-          .body(new ByteArrayResource(file.getFiledata()));
+          .body(new ByteArrayResource(file.getFileData()));
     } catch (Exception e) {
       e.printStackTrace();
 
@@ -46,9 +46,8 @@ public class FileController {
     }
   }
 
-  @PostMapping("/files")
-  public String insertFile(
-      @RequestAttribute MultipartFile fileUpload, Model model, Authentication auth)
+  @PostMapping("/file")
+  public String create(@RequestAttribute MultipartFile fileUpload, Model model, Authentication auth)
       throws IOException {
     String actionMessage = null;
 
@@ -59,7 +58,7 @@ public class FileController {
     }
 
     if (actionMessage == null) {
-      Boolean isOk = fileService.insertFile(auth, fileUpload);
+      Boolean isOk = fileService.create(auth, fileUpload);
       if (isOk) {
         actionMessage = "The file was successfully saved.";
       } else {
@@ -71,10 +70,10 @@ public class FileController {
     return "home";
   }
 
-  @GetMapping("/files/delete/{fileId}")
-  public String deleteFile(@PathVariable Integer fileId, Model model, Authentication auth) {
+  @GetMapping("/file/delete/{fileId}")
+  public String delete(@PathVariable Integer fileId, Model model, Authentication auth) {
     String actionMessage = "The file was successfully deleted";
-    int fileRows = fileService.deleteFile(auth, fileId);
+    int fileRows = fileService.delete(auth, fileId);
 
     if (fileRows == 0) {
       actionMessage = "There was an error deleting the file, please try again.";
@@ -86,8 +85,8 @@ public class FileController {
 
   private void addAttributes(Model model, String actionMessage, Authentication auth) {
     model.addAttribute("actionMessage", actionMessage);
-    model.addAttribute("isFilesActive", true);
-    model.addAttribute("files", fileService.getFiles(auth));
-    model.addAttribute("notes", noteService.getNotes(auth));
+    model.addAttribute("isFileActive", true);
+    model.addAttribute("files", fileService.readAll(auth));
+    model.addAttribute("notes", noteService.read(auth));
   }
 }
