@@ -25,7 +25,7 @@ public class CredentialService {
     this.encryptionService = encryptionService;
   }
 
-  public int create(Authentication auth, Credential credential) {
+  public void create(Authentication auth, Credential credential) {
     User user = userService.read(auth.getName());
 
     SecureRandom random = new SecureRandom();
@@ -33,7 +33,7 @@ public class CredentialService {
     random.nextBytes(key);
     String encodedKey = Base64.getEncoder().encodeToString(key);
 
-    return credentialMapper.create(
+    credentialMapper.create(
         new Credential(
             null,
             credential.getUrl(),
@@ -55,11 +55,11 @@ public class CredentialService {
     return credentials;
   }
 
-  public int update(Authentication auth, Credential credential) {
+  public void update(Authentication auth, Credential credential) {
     User user = userService.read(auth.getName());
     String key = credentialMapper.read(user.getUserid(), credential.getCredentialId()).getKey();
 
-    return credentialMapper.update(
+    credentialMapper.update(
         new Credential(
             credential.getCredentialId(),
             credential.getUrl(),

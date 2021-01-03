@@ -18,10 +18,10 @@ public class NoteService {
     this.userService = userService;
   }
 
-  public int create(Authentication auth, Note note) {
+  public void create(Authentication auth, Note note) {
     User user = userService.read(auth.getName());
 
-    return noteMapper.create(
+    noteMapper.create(
         new Note(null, note.getNoteTitle(), note.getNoteDescription(), user.getUserid()));
   }
 
@@ -30,9 +30,9 @@ public class NoteService {
     return noteMapper.read(user.getUserid());
   }
 
-  public int update(Authentication auth, Note note) {
+  public void update(Authentication auth, Note note) {
     User user = userService.read(auth.getName());
-    return noteMapper.update(
+    noteMapper.update(
         new Note(
             note.getNoteId(), note.getNoteTitle(), note.getNoteDescription(), user.getUserid()));
   }
