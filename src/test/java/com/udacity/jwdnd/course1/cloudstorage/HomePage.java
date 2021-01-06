@@ -1,9 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -117,7 +114,7 @@ class HomePage {
 
   void createNote(String title, String description) {
     waitForVisibility(notesTab);
-    notesTab.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", notesTab);
 
     waitForVisibility(noteModalButton);
     noteModalButton.click();
@@ -130,7 +127,7 @@ class HomePage {
 
   Boolean isNoteDetailsVisible() {
     waitForVisibility(notesTab);
-    notesTab.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", notesTab);
 
     waitForVisibility(tableNoteTitle);
     waitForVisibility(tableNoteDescription);
@@ -150,9 +147,9 @@ class HomePage {
 
   void editNote(String title, String description) {
     waitForVisibility(notesTab);
-    notesTab.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", notesTab);
 
-    tableEditNoteButton.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", tableEditNoteButton);
     waitForVisibility(noteModal);
 
     noteTitle.clear();
@@ -174,7 +171,7 @@ class HomePage {
 
   void createCredential(String url, String username, String password) {
     waitForVisibility(credentialTab);
-    credentialTab.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", credentialTab);
 
     waitForVisibility(credentialModalButton);
     credentialModalButton.click();
@@ -188,7 +185,7 @@ class HomePage {
 
   boolean isCredentialDetailsVisible() {
     waitForVisibility(credentialTab);
-    credentialTab.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", credentialTab);
 
     waitForVisibility(tableCredentialUrl);
     waitForVisibility(tableCredentialUsername);
@@ -201,9 +198,10 @@ class HomePage {
 
   void editCredential(String url, String username, String password) {
     waitForVisibility(credentialTab);
-    credentialTab.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", credentialTab);
 
-    tableEditCredentialButton.click();
+    ((JavascriptExecutor) webDriver)
+        .executeScript("arguments[0].click();", tableEditCredentialButton);
     waitForVisibility(credentialModal);
 
     credentialUrl.clear();

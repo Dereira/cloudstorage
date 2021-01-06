@@ -65,7 +65,7 @@ public class CredentialTests {
 
     Assertions.assertEquals(url, homePage.getTableCredentialUrl().getText());
     Assertions.assertEquals(username, homePage.getTableCredentialUsername().getText());
-    Assertions.assertEquals(password, homePage.getTableCredentialPassword().getText());
+    Assertions.assertTrue(homePage.getTableCredentialPassword().isDisplayed());
   }
 
   @Test
