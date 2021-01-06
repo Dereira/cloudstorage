@@ -117,12 +117,14 @@ class HomePage {
     ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", notesTab);
 
     waitForVisibility(noteModalButton);
-    noteModalButton.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", noteModalButton);
 
     waitForVisibility(noteModal);
-    noteTitle.sendKeys(title);
-    noteDescription.sendKeys(description);
-    saveNoteButton.click();
+    ((JavascriptExecutor) webDriver)
+        .executeScript("arguments[0].value='" + title + "';", noteTitle);
+    ((JavascriptExecutor) webDriver)
+        .executeScript("arguments[0].value='" + description + "';", noteDescription);
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", saveNoteButton);
   }
 
   Boolean isNoteDetailsVisible() {
@@ -152,20 +154,21 @@ class HomePage {
     ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", tableEditNoteButton);
     waitForVisibility(noteModal);
 
-    noteTitle.clear();
-    noteTitle.sendKeys(title);
+    ((JavascriptExecutor) webDriver)
+        .executeScript("arguments[0].value='" + title + "';", noteTitle);
 
-    noteDescription.clear();
-    noteDescription.sendKeys(description);
+    ((JavascriptExecutor) webDriver)
+        .executeScript("arguments[0].value='" + description + "';", noteDescription);
 
-    saveNoteButton.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", saveNoteButton);
   }
 
   void deleteNote() {
     waitForVisibility(notesTab);
-    notesTab.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", notesTab);
 
-    tableDeleteNoteButton.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", tableDeleteNoteButton);
+
     waitForVisibility(notesTab);
   }
 
@@ -174,13 +177,16 @@ class HomePage {
     ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", credentialTab);
 
     waitForVisibility(credentialModalButton);
-    credentialModalButton.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", credentialModalButton);
 
     waitForVisibility(credentialModal);
-    credentialUrl.sendKeys(url);
-    credentialUsername.sendKeys(username);
-    credentialPassword.sendKeys(password);
-    saveCredentialButton.click();
+    ((JavascriptExecutor) webDriver)
+        .executeScript("arguments[0].value='" + url + "';", credentialUrl);
+    ((JavascriptExecutor) webDriver)
+        .executeScript("arguments[0].value='" + username + "';", credentialUsername);
+    ((JavascriptExecutor) webDriver)
+        .executeScript("arguments[0].value='" + password + "';", credentialPassword);
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", saveCredentialButton);
   }
 
   boolean isCredentialDetailsVisible() {
@@ -204,23 +210,25 @@ class HomePage {
         .executeScript("arguments[0].click();", tableEditCredentialButton);
     waitForVisibility(credentialModal);
 
-    credentialUrl.clear();
-    credentialUrl.sendKeys(url);
+    ((JavascriptExecutor) webDriver)
+        .executeScript("arguments[0].value='" + url + "';", credentialUrl);
 
-    credentialUsername.clear();
-    credentialUsername.sendKeys(username);
+    ((JavascriptExecutor) webDriver)
+        .executeScript("arguments[0].value='" + username + "';", credentialUsername);
 
-    credentialPassword.clear();
-    credentialPassword.sendKeys(password);
+    ((JavascriptExecutor) webDriver)
+        .executeScript("arguments[0].value='" + password + "';", credentialPassword);
 
-    saveCredentialButton.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", saveCredentialButton);
   }
 
   void deleteCredential() {
     waitForVisibility(credentialTab);
-    credentialTab.click();
+    ((JavascriptExecutor) webDriver).executeScript("arguments[0].click();", credentialTab);
 
-    tableDeleteCredentialButton.click();
+    ((JavascriptExecutor) webDriver)
+        .executeScript("arguments[0].click();", tableDeleteCredentialButton);
+
     waitForVisibility(credentialTab);
   }
 
