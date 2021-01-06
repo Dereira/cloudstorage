@@ -3,7 +3,7 @@ package com.udacity.jwdnd.course1.cloudstorage;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
@@ -13,19 +13,19 @@ public class CredentialTests {
   private String baseURL;
   @LocalServerPort private int port;
   private WebDriver driver;
+  private HomePage homePage;
 
   @BeforeAll
   static void beforeAll() {
-    System.setProperty(
-        "webdriver.firefox.bin",
-        "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox-bin");
-    WebDriverManager.firefoxdriver().setup();
+    WebDriverManager.chromedriver().setup();
   }
 
   @BeforeEach
   public void beforeEach() {
-    driver = new FirefoxDriver();
+    driver = new ChromeDriver();
+    driver.manage().window().maximize();
     baseURL = "http://localhost:" + port;
+    homePage = new HomePage(driver);
   }
 
   @AfterEach
@@ -43,15 +43,12 @@ public class CredentialTests {
 
     signupFlow.loginUser(driver, baseURL);
 
-    HomePage homePage = new HomePage(driver);
     homePage.createCredential(url, username, password);
   }
 
   @Test
   public void isCredentialCreated() {
     createCredential();
-
-    HomePage homePage = new HomePage(driver);
 
     Assertions.assertTrue(homePage.isCredentialDetailsVisible());
   }
@@ -64,7 +61,6 @@ public class CredentialTests {
 
     createCredential();
 
-    HomePage homePage = new HomePage(driver);
     homePage.editCredential(url, username, password);
 
     Assertions.assertEquals(url, homePage.getTableCredentialUrl().getText());
@@ -75,8 +71,6 @@ public class CredentialTests {
   @Test
   public void isCredentialDeleted() {
     createCredential();
-
-    HomePage homePage = new HomePage(driver);
 
     homePage.deleteCredential();
 

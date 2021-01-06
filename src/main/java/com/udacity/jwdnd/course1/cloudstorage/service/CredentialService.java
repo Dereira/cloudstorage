@@ -45,14 +45,8 @@ public class CredentialService {
 
   public List<Credential> read(Authentication auth) {
     User user = userService.read(auth.getName());
-    List<Credential> credentials = credentialMapper.readAll(user.getUserid());
 
-    credentials.forEach(
-        credential ->
-            credential.setPassword(
-                encryptionService.decryptValue(credential.getPassword(), credential.getKey())));
-
-    return credentials;
+    return credentialMapper.readAll(user.getUserid());
   }
 
   public void update(Authentication auth, Credential credential) {
@@ -72,5 +66,12 @@ public class CredentialService {
   public int delete(Authentication auth, int credentialId) {
     User user = userService.read(auth.getName());
     return credentialMapper.delete(user.getUserid(), credentialId);
+  }
+
+  public String decryptPassword(Authentication auth, int credentialId) {
+    User user = userService.read(auth.getName());
+    Credential credential = credentialMapper.read(user.getUserid(), credentialId);
+
+    return encryptionService.decryptValue(credential.getPassword(), credential.getKey());
   }
 }

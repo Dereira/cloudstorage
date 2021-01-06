@@ -3,7 +3,7 @@ package com.udacity.jwdnd.course1.cloudstorage;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
@@ -13,19 +13,19 @@ class NoteTests {
   private String baseURL;
   @LocalServerPort private int port;
   private WebDriver driver;
+  private HomePage homePage;
 
   @BeforeAll
   static void beforeAll() {
-    System.setProperty(
-        "webdriver.firefox.bin",
-        "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox-bin");
-    WebDriverManager.firefoxdriver().setup();
+    WebDriverManager.chromedriver().setup();
   }
 
   @BeforeEach
   public void beforeEach() {
-    driver = new FirefoxDriver();
+    driver = new ChromeDriver();
+    driver.manage().window().maximize();
     baseURL = "http://localhost:" + port;
+    homePage = new HomePage(driver);
   }
 
   @AfterEach
@@ -42,15 +42,12 @@ class NoteTests {
 
     signupFlow.loginUser(driver, baseURL);
 
-    HomePage homePage = new HomePage(driver);
     homePage.createNote(title, description);
   }
 
   @Test
   public void isNoteCreated() {
     createNote();
-
-    HomePage homePage = new HomePage(driver);
 
     Assertions.assertTrue(homePage.isNoteDetailsVisible());
   }
@@ -62,7 +59,6 @@ class NoteTests {
 
     createNote();
 
-    HomePage homePage = new HomePage(driver);
     homePage.editNote(title, description);
 
     Assertions.assertEquals(title, homePage.getTableNoteTitle().getText());
@@ -72,8 +68,6 @@ class NoteTests {
   @Test
   public void isNoteDeleted() {
     createNote();
-
-    HomePage homePage = new HomePage(driver);
 
     homePage.deleteNote();
 

@@ -7,11 +7,10 @@ import com.udacity.jwdnd.course1.cloudstorage.service.NoteService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -57,6 +56,17 @@ public class CredentialController {
 
     addAttributes(model, actionMessage, auth);
     return "home";
+  }
+
+  @GetMapping("/password/{credentialId}")
+  @ResponseBody
+  public Map<String, String> decryptPassword(
+      @PathVariable Integer credentialId, Authentication auth) {
+    String password = credentialService.decryptPassword(auth, credentialId);
+
+    Map<String, String> response = new HashMap<>();
+    response.put("password", password);
+    return response;
   }
 
   private void addAttributes(Model model, String actionMessage, Authentication auth) {

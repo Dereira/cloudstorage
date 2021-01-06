@@ -3,7 +3,7 @@ package com.udacity.jwdnd.course1.cloudstorage;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
@@ -16,15 +16,13 @@ public class SignupLoginFlowTests {
 
   @BeforeAll
   static void beforeAll() {
-    System.setProperty(
-        "webdriver.firefox.bin",
-        "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox-bin");
-    WebDriverManager.firefoxdriver().setup();
+    WebDriverManager.chromedriver().setup();
   }
 
   @BeforeEach
   public void beforeEach() {
-    driver = new FirefoxDriver();
+    driver = new ChromeDriver();
+    driver.manage().window().maximize();
     baseURL = "http://localhost:" + port;
   }
 
